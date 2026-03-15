@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from './pages/HomePage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import RegisterPage from './pages/RegisterPage.vue'
+import { useAuthStore } from './store/auth.store'
 
 export const ROUTES = {
   HOME: '/',
@@ -23,6 +24,21 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to) => {
+  const authStore = useAuthStore()
+
+  if (
+    authStore.isAuth &&
+    (to.path === ROUTES.LOGIN || to.path === ROUTES.REGISTER)
+  ) {
+    return ROUTES.HOME
+  }
+
+  if (to.meta.requiresAuth && !authStore.isAuth) {
+    return ROUTES.LOGIN
+  }
 })
 
 export default router

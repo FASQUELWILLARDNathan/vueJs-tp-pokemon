@@ -30,7 +30,15 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = response.token
     user.value = response.user
   }
-  return { token, user, isAuth, signUp }
+
+  const logout = () => {
+    set('token', null)
+    set('user', null)
+    token.value = null
+    user.value = null
+  }
+
+  return { token, user, isAuth, signUp, logout }
 })
 
 // POUR LA SUITE DU TP POUR REDIRECTION SI PAS CONNECTER UTILISER BEFOREEACH DANS Router.TS SI IL Y A UN META REQUIRED A VRAI ET QUE ISAUTH EST FAUX ALORS PAS CONNECTER ALORS ON PART VERS LOGIN ET SI UNE PAGE NA PAS BESOIN DETRE AUTHENTIFIER PAS BESOIN DE L Y EMMENER

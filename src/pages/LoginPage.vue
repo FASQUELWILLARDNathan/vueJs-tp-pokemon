@@ -22,9 +22,13 @@
 <script setup lang="ts">
 import { NButton, NFormItem } from 'naive-ui'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { useApi } from '@/composables/useApi'
 import { useStorage } from '@/composables/useStorage'
+import { ROUTES } from '@/router'
+
+const router = useRouter()
 const useAPI = useApi()
 const { set } = useStorage()
 
@@ -38,5 +42,6 @@ const handleSignIn = async () => {
   })
   set('token', response.token)
   set('user', response.user)
+  router.push(ROUTES.HOME)
 }
 </script>
