@@ -11,7 +11,9 @@
         placeholder="Password"
       />
     </NFormItem>
-    <NButton type="primary" attr-type="submit">Se connecter</NButton>
+    <NButton type="primary" attr-type="submit" :disabled="isLoading"
+      >Se connecter</NButton
+    >
     <div class="footer">
       <p>Jamais enregistrer ?</p>
       <RouterLink to="/register">S'enregistrer</RouterLink>
@@ -24,24 +26,28 @@ import { NButton, NFormItem } from 'naive-ui'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useApi } from '@/composables/useApi'
-import { useStorage } from '@/composables/useStorage'
 import { ROUTES } from '@/router'
+import { useAuthStore } from '@/store/auth.store'
 
 const router = useRouter()
-const useAPI = useApi()
-const { set } = useStorage()
+const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
+const isLoading = ref(false)
 
 const handleSignIn = async () => {
-  const response = await useAPI.signIn({
-    email: email.value,
-    password: password.value,
-  })
-  set('token', response.token)
-  set('user', response.user)
-  router.push(ROUTES.HOME)
+  isLoading.value = true
+  try {
+    await authStore.signIn({
+      email: email.value,
+      password: password.value,
+    })
+    router.push(ROUTES.HOME)
+  } catch {
+    alert('Identifiants incorrects')
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>

@@ -14,7 +14,9 @@
         placeholder="Password"
       />
     </NFormItem>
-    <NButton type="primary" attr-type="submit">S'inscrire</NButton>
+    <NButton type="primary" attr-type="submit" :disabled="isLoading"
+      >S'inscrire</NButton
+    >
     <div class="footer">
       <p>Déjà un compte ?</p>
       <RouterLink to="/login">Se connecter</RouterLink>
@@ -36,13 +38,22 @@ const authStore = useAuthStore()
 const username = ref('')
 const email = ref('')
 const password = ref('')
+const isLoading = ref(false)
 
 const handleSignUp = async () => {
-  await authStore.signUp({
-    username: username.value,
-    email: email.value,
-    password: password.value,
-  })
+  isLoading.value = true
+  try {
+    await authStore.signUp({
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    })
+  } catch {
+    alert('Inscription annulée')
+  } finally {
+    isLoading.value = false
+  }
+
   router.push(ROUTES.HOME)
 }
 </script>

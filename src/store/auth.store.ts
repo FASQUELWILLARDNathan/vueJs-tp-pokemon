@@ -3,10 +3,8 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 import { useApi } from '@/composables/useApi'
-// import { computed, ref } from 'vue'
 import { useStorage } from '@/composables/useStorage'
 import type { SignUpPayload, User } from '@/types'
-// import { useStorage } from '@/composables/useStorage'
 
 export const useAuthStore = defineStore('auth', () => {
   const { get, set } = useStorage()
@@ -16,6 +14,19 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuth = computed((): boolean => {
     return token.value && user.value ? true : false
   })
+
+  const signIn = async (payload: { email: string; password: string }) => {
+    const { email, password } = payload
+    const useAPI = useApi()
+    const response = await useAPI.signIn({
+      email: email,
+      password: password,
+    })
+    set('token', response.token)
+    set('user', response.user)
+    token.value = response.token
+    user.value = response.user
+  }
 
   const signUp = async (payload: SignUpPayload) => {
     const { username, email, password } = payload
@@ -38,7 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
   }
 
-  return { token, user, isAuth, signUp, logout }
+  return { token, user, isAuth, signIn, signUp, logout }
 })
 
 // POUR LA SUITE DU TP POUR REDIRECTION SI PAS CONNECTER UTILISER BEFOREEACH DANS Router.TS SI IL Y A UN META REQUIRED A VRAI ET QUE ISAUTH EST FAUX ALORS PAS CONNECTER ALORS ON PART VERS LOGIN ET SI UNE PAGE NA PAS BESOIN DETRE AUTHENTIFIER PAS BESOIN DE L Y EMMENER
