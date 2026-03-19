@@ -39,6 +39,8 @@ router.beforeEach((to) => {
   if (to.meta.requiresAuth && !authStore.isAuth) {
     return ROUTES.LOGIN
   }
+
+  return true
 })
 
 export default router
