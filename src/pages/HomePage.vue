@@ -1,5 +1,7 @@
 <template>
-  <div class="container">
-    <NEmpty description="Page d'accueil à implémenter (tickets 2 et 3)" />
-  </div>
+  <HomePagePlayer />
 </template>
+
+<script setup lang="ts">
+import HomePagePlayer from '../components/layout/HomePagePlayer.vue'
+</script>
