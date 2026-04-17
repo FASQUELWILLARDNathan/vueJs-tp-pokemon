@@ -134,7 +134,7 @@ const emit = defineEmits<{
 const showAttackModal = ref(false)
 
 const canDraw = computed(() => {
-  return (
+  return !!(
     props.isPlayerTurn &&
     props.currentPlayerState &&
     props.currentPlayerState.hand.length < 5 &&
@@ -143,7 +143,7 @@ const canDraw = computed(() => {
 })
 
 const canAttack = computed(() => {
-  return (
+  return !!(
     props.isPlayerTurn &&
     props.currentPlayerState?.activeCard &&
     props.opponentPlayerState?.activeCard

@@ -71,9 +71,19 @@ export interface AttackData {
   damage: number
 }
 
-// Socket events
-
 export interface SocketErrorEvent {
   message: string
   code?: string
+}
+
+export interface PlayerState {
+  id: number
+  username: string
+  deckId: number
+  hand: Card[]
+  deck: Card[]
+  bench: Card[]
+  activeCard?: Card
+  activeCardHp: number
+  knockouts: number
 }

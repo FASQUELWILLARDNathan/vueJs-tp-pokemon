@@ -256,7 +256,7 @@ import {
   NSpace,
   NSpin,
 } from 'naive-ui'
-import { computed, defineOptions, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import { useGameStore } from '@/store/game.store'
 import type { Card, Deck } from '@/types'
@@ -282,9 +282,9 @@ const gameStore = useGameStore()
 const isCreatingRoom = ref(false)
 const isRefreshingRooms = ref(false)
 const isJoiningRoom = ref(false)
-const joiningRoomId = ref<string | null>(null)
+const joiningRoomId = ref<string | number | null>(null)
 const localSelectedDeckId = ref<number | null>(null)
-const roomDeckSelections = ref<Map<string, number>>(new Map())
+const roomDeckSelections = ref<Map<string | number, number>>(new Map())
 const currentCreatedRoomId = ref<string | null>(null)
 let refreshInterval: ReturnType<typeof setInterval> | null = null
 
@@ -325,7 +325,7 @@ const selectDeckForCreate = (deckId: number) => {
   localSelectedDeckId.value = deckId
 }
 
-const selectDeckForJoin = (roomId: string, deckId: number) => {
+const selectDeckForJoin = (roomId: string | number, deckId: number) => {
   roomDeckSelections.value.set(roomId, deckId)
 }
 
@@ -341,7 +341,12 @@ const handleCreateRoom = async () => {
   isCreatingRoom.value = true
   try {
     const handler = (data: unknown) => {
-      currentCreatedRoomId.value = data.roomId || data.room?.id
+      if (typeof data === 'object' && data !== null) {
+        currentCreatedRoomId.value =
+          ((data as Record<string, unknown>).roomId as string) ||
+          (((data as Record<string, unknown>).room as Record<string, unknown>)
+            ?.id as string)
+      }
       gameStore.state.socket?.off('roomCreated', handler)
     }
     gameStore.state.socket?.on('roomCreated', handler)
@@ -351,7 +356,7 @@ const handleCreateRoom = async () => {
   }
 }
 
-const handleJoinRoom = async (roomId: string) => {
+const handleJoinRoom = async (roomId: string | number) => {
   const deckId = roomDeckSelections.value.get(roomId)
   if (!deckId) return
 

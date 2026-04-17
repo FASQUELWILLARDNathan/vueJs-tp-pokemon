@@ -51,7 +51,9 @@ export const useGameStore = defineStore('game', () => {
 
     const socket = state.value.socket
     if (!socket || !socket.id) return false
-    return socket.id === state.value.gameState.currentPlayerSocketId
+    const currentPlayerSocketId = state.value.gameState.currentPlayerSocketId
+    if (!currentPlayerSocketId) return false
+    return socket.id === currentPlayerSocketId
   })
 
   const currentPlayerRole = computed(() => {
@@ -131,13 +133,29 @@ export const useGameStore = defineStore('game', () => {
     // Lobby events
 
     socket.on('roomsList', (data: unknown) => {
-      const rooms = Array.isArray(data) ? data : data?.rooms || []
+      let rooms: Room[] = []
+      if (Array.isArray(data)) {
+        rooms = data
+      } else if (typeof data === 'object' && data !== null && 'rooms' in data) {
+        const typedData = data as Record<string, unknown>
+        if (Array.isArray(typedData.rooms)) {
+          rooms = typedData.rooms as Room[]
+        }
+      }
       state.value.rooms = rooms
       state.value.lastEvent = 'Liste des rooms mise à jour'
     })
 
     socket.on('roomsListUpdated', (data: unknown) => {
-      const rooms = Array.isArray(data) ? data : data?.rooms || []
+      let rooms: Room[] = []
+      if (Array.isArray(data)) {
+        rooms = data
+      } else if (typeof data === 'object' && data !== null && 'rooms' in data) {
+        const typedData = data as Record<string, unknown>
+        if (Array.isArray(typedData.rooms)) {
+          rooms = typedData.rooms as Room[]
+        }
+      }
       state.value.rooms = rooms
       state.value.lastEvent = 'Rooms mises à jour en temps réel'
     })
@@ -170,6 +188,8 @@ export const useGameStore = defineStore('game', () => {
 
       if (oldGameState && newGameState) {
         const role = currentPlayerRole.value
+        if (!role) return
+
         const oldOpponent =
           role === 'host' ? oldGameState.guest : oldGameState.host
         const newOpponent =
@@ -312,7 +332,7 @@ export const useGameStore = defineStore('game', () => {
     state.value.socket.emit('createRoom', { deckId })
   }
 
-  const joinRoom = async (roomId: string, deckId: number) => {
+  const joinRoom = async (roomId: string | number, deckId: number) => {
     if (!state.value.socket || !state.value.isConnected) {
       state.value.errorMessage = 'Socket non connecté'
       return

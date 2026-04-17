@@ -112,8 +112,8 @@ const loading = ref(false)
 const selectedDeckId = ref<number | null>(null)
 
 const selectedDeck = computed(() => {
-  if (!selectedDeckId.value) return null
-  return decks.value.find((d) => d.id === selectedDeckId.value) ?? null
+  if (!selectedDeckId.value) return undefined
+  return decks.value.find((d) => d.id === selectedDeckId.value)
 })
 
 const loadDecks = async () => {

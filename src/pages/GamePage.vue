@@ -130,7 +130,7 @@ const gameStore = useGameStore()
 const authStore = useAuthStore()
 
 const canDraw = computed(() => {
-  return (
+  return !!(
     gameStore.isCurrentPlayerTurn &&
     gameStore.currentPlayerState &&
     gameStore.currentPlayerState.hand.length < 5 &&

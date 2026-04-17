@@ -48,7 +48,7 @@
           "
           @mouseenter="hoveredCardId = card.id"
           @mouseleave="hoveredCardId = null"
-          @click="canPlayCard && handlePlayCard(card.id, card.name)"
+          @click="canPlayCard && handlePlayCard(card.id)"
         >
           <!-- Image de la carte -->
           <div
