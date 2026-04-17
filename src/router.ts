@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import CreateDeckPage from './pages/CreateDeckPage.vue'
 import DeckDetailPage from './pages/DeckDetailPage.vue'
+import GamePage from './pages/GamePage.vue'
 import HomePage from './pages/HomePage.vue'
 import LoginPage from './pages/LoginPage.vue'
 import RegisterPage from './pages/RegisterPage.vue'
@@ -12,6 +13,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   CREATE_DECK: '/decks/create',
+  GAME: '/game',
 } as const
 
 const routes = [
@@ -25,6 +27,11 @@ const routes = [
   {
     path: ROUTES.CREATE_DECK,
     component: CreateDeckPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: ROUTES.GAME,
+    component: GamePage,
     meta: { requiresAuth: true },
   },
   {

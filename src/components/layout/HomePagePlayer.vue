@@ -63,69 +63,16 @@
             </NButton>
           </template>
 
-          <!-- Vue Détail d'un Deck -->
+          <!-- Vue Lobby -->
           <template v-else>
-            <NSpace justify="space-between" align="center" style="width: 100%">
-              <NButton @click="handleBack">← Retour</NButton>
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; flex: 1">
-                {{ selectedDeck?.name }}
-              </h1>
-              <NButton
-                type="primary"
-                :style="{ backgroundColor: '#4caf82', borderColor: '#4caf82' }"
-                @click="handleEditSelectedDeck"
-              >
-                Modifier
-              </NButton>
-            </NSpace>
-
-            <NSpin :show="loading">
-              <div v-if="!loading && selectedDeck">
-                <NSpace vertical :size="32" style="width: 100%">
-                  <!-- Stats Section -->
-                  <div>
-                    <NCard>
-                      <NSpace vertical :size="8">
-                        <span
-                          style="
-                            font-size: 12px;
-                            color: #999;
-                            text-transform: uppercase;
-                            font-weight: 600;
-                          "
-                        >
-                          Nombre de cartes
-                        </span>
-                        <span
-                          style="
-                            font-size: 24px;
-                            font-weight: 700;
-                            color: #4caf82;
-                          "
-                        >
-                          {{ selectedDeck.cards.length }} / 10
-                        </span>
-                      </NSpace>
-                    </NCard>
-                  </div>
-
-                  <!-- Cards Grid -->
-                  <div>
-                    <h2
-                      style="
-                        font-size: 18px;
-                        font-weight: 700;
-                        color: #222;
-                        margin: 0 0 16px 0;
-                      "
-                    >
-                      Cartes du deck
-                    </h2>
-                    <CardGrid :cards="getSelectedDeckCards" size="sm" />
-                  </div>
-                </NSpace>
-              </div>
-            </NSpin>
+            <Lobby
+              :decks="decks"
+              :selected-deck="selectedDeck"
+              :selected-deck-id="selectedDeckId || 0"
+              :all-cards="allCards"
+              @back="handleBack"
+              @update-selected-deck="updateSelectedDeck"
+            />
           </template>
         </NSpace>
       </NLayoutContent>
@@ -153,6 +100,7 @@ import { useApi } from '../../composables/useApi'
 import { ROUTES } from '../../router'
 import type { Card, Deck } from '../../types/index'
 import CardGrid from '../card/CardGrid.vue'
+import Lobby from './Lobby.vue'
 
 const router = useRouter()
 const message = useMessage()
@@ -166,13 +114,6 @@ const selectedDeckId = ref<number | null>(null)
 const selectedDeck = computed(() => {
   if (!selectedDeckId.value) return null
   return decks.value.find((d) => d.id === selectedDeckId.value) ?? null
-})
-
-const getSelectedDeckCards = computed(() => {
-  if (!selectedDeck.value) return []
-  return selectedDeck.value.cards
-    .map((dc) => allCards.value.get(dc.cardId))
-    .filter((card): card is Card => !!card)
 })
 
 const loadDecks = async () => {
@@ -228,15 +169,6 @@ function handleEdit(deck: Deck) {
   })
 }
 
-function handleEditSelectedDeck() {
-  if (selectedDeckId.value) {
-    router.push({
-      name: 'EditDeck',
-      params: { id: selectedDeckId.value },
-    })
-  }
-}
-
 async function handleDelete(deck: Deck) {
   try {
     await api.deleteDeck(deck.id)
@@ -245,5 +177,9 @@ async function handleDelete(deck: Deck) {
   } catch (_error) {
     message.error('Erreur lors de la suppression du deck')
   }
+}
+
+function updateSelectedDeck(deckId: number) {
+  selectedDeckId.value = deckId
 }
 </script>

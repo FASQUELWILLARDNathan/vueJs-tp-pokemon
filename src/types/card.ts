@@ -22,6 +22,7 @@ export interface Card {
   id: number
   name: string
   hp: number
+  currentHp?: number
   attack: number
   type: PokemonType
   pokedexNumber: number
